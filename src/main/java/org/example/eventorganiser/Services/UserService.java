@@ -30,4 +30,12 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public boolean loginUser(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return false;
+        }
+        return passwordEncoder.matches(rawPassword, user.getPassword());
+    }
 }
