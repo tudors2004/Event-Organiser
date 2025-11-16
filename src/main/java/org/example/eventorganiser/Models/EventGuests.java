@@ -10,7 +10,7 @@ public class EventGuests {
 
     @ManyToOne
     @MapsId("guestId")
-    @JoinColumn(name="guest_id")
+    @JoinColumn(name="guest_user_id")
     private User user;
 
     @ManyToOne
@@ -18,11 +18,13 @@ public class EventGuests {
     @JoinColumn(name="event_id")
     private Event event;
 
-    private Boolean status = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private InvitationStatus status = InvitationStatus.PENDING;
 
     public EventGuests() {}
 
-    public EventGuests(User user, Event event, Boolean status) {
+    public EventGuests(User user, Event event, InvitationStatus status){
         this.user = user;
         this.event = event;
         this.status = status;
@@ -52,11 +54,11 @@ public class EventGuests {
         this.event = event;
     }
 
-    public Boolean getStatus() {
+    public InvitationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(InvitationStatus status) {
         this.status = status;
     }
 }
