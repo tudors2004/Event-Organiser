@@ -1,11 +1,14 @@
 package org.example.eventorganiser.Models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Date;
 import java.util.List;
 
-
+@Getter
+@Setter
 @Entity
 @Table(name="events")
 public class Event {
@@ -31,53 +34,5 @@ public class Event {
         this.eventName = eventName;
         this.eventDate = eventDate;
         this.eventLocation = eventLocation;
-    }
-
-    public int getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
-    }
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public Date getEventDate() {
-        return eventDate;
-    }
-
-    public void setEventDate(Date eventDate) {
-        this.eventDate = eventDate;
-    }
-
-    public String getEventLocation() {
-        return eventLocation;
-    }
-
-    public void setEventLocation(String event_location) {
-        this.eventLocation = event_location;
-    }
-
-    public List<EventGuests> getEventGuests() {
-        return eventGuests;
-    }
-
-    public void setEventGuests(List<EventGuests> eventGuests) {
-        this.eventGuests = eventGuests;
-    }
-
-    public List<User> getOrganizers() {
-        return organizers;
-    }
-
-    public void setOrganizers(List<User> organizers) {
-        this.organizers = organizers;
     }
 }

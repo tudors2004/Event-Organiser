@@ -17,13 +17,13 @@ public class EventService {
         this.eventRepository = eventRepository;
     }
 
-    public Event addEvent(String eventName, Date eventDate, String eventLocation, List<User> organizers){
+    public void addEvent(String eventName, Date eventDate, String eventLocation, List<User> organizers){
         Event event = new Event();
         event.setEventName(eventName);
         event.setEventDate(eventDate);
         event.setEventLocation(eventLocation);
         event.setOrganizers(organizers);
 
-        return eventRepository.save(event);
+        eventRepository.save(event);
     }
 }
