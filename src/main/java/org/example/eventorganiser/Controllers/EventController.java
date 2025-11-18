@@ -1,5 +1,6 @@
 package org.example.eventorganiser.Controllers;
 
+import org.example.eventorganiser.DTOs.CreateEventRequest;
 import org.example.eventorganiser.Models.Event;
 import org.example.eventorganiser.Repositories.EventRepository;
 import org.example.eventorganiser.Services.EventService;
@@ -19,6 +20,13 @@ public class EventController {
         this.eventService = eventService;
     }
 
-//    @PostMapping("/createEvent")
-//    public ResponseEntity<?> createEvent(@RequestBody Event event){}
+    @PostMapping("/createEvent")
+    public ResponseEntity<?> createEvent(@RequestBody CreateEventRequest request){
+        try{
+            eventService.addEvent(request.getEventName(), request.getEventDate(), request.getEventLocation(), request.getOrganizers());
+            return ResponseEntity.ok("Event created successfully");
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
