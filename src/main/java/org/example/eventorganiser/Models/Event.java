@@ -17,20 +17,20 @@ public class Event {
 
     private Date eventDate;
 
-    private String event_location;
+    private String eventLocation;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<EventGuests> event_guests;
+    private List<EventGuests> eventGuests;
 
     @ManyToMany(mappedBy = "organisedEvents")
     private List<User> organizers;
 
     public Event() {}
 
-    public Event(String eventName, Date eventDate, String event_location) {
+    public Event(String eventName, Date eventDate, String eventLocation) {
         this.eventName = eventName;
         this.eventDate = eventDate;
-        this.event_location = event_location;
+        this.eventLocation = eventLocation;
     }
 
     public int getEventId() {
@@ -57,20 +57,20 @@ public class Event {
         this.eventDate = eventDate;
     }
 
-    public String getEvent_location() {
-        return event_location;
+    public String getEventLocation() {
+        return eventLocation;
     }
 
-    public void setEvent_location(String event_location) {
-        this.event_location = event_location;
+    public void setEventLocation(String event_location) {
+        this.eventLocation = event_location;
     }
 
-    public List<EventGuests> getEvent_guests() {
-        return event_guests;
+    public List<EventGuests> getEventGuests() {
+        return eventGuests;
     }
 
-    public void setEvent_guests(List<EventGuests> event_guests) {
-        this.event_guests = event_guests;
+    public void setEventGuests(List<EventGuests> eventGuests) {
+        this.eventGuests = eventGuests;
     }
 
     public List<User> getOrganizers() {
