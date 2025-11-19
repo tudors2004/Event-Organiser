@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface EventGuestsRepository extends JpaRepository<EventGuests, EventGuestsId> {
-    List<EventGuests> findByGuest(User guest);
-    List<EventGuests> findByGuestAndStatus(User guest, InvitationStatus status);
+    List<EventGuests> findByUser(User guest);
+    List<EventGuests> findByUserAndStatus(User guest, InvitationStatus status);
 }

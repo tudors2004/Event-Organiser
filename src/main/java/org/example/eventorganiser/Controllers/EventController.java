@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.SQLException;
+
 @RestController
 @RequestMapping("/events")
 public class EventController {
@@ -23,9 +25,9 @@ public class EventController {
     @PostMapping("/createEvent")
     public ResponseEntity<?> createEvent(@RequestBody CreateEventRequest request){
         try{
-            eventService.addEvent(request.getEventName(), request.getEventDate(), request.getEventLocation(), request.getOrganizers());
+            eventService.addEvent(request.getEventName(), request.getEventDate(), request.getEventLocation(), request.getOrganizersId());
             return ResponseEntity.ok("Event created successfully");
-        } catch (RuntimeException e){
+        } catch (SQLException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

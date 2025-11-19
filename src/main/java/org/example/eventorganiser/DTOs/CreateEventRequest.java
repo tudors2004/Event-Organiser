@@ -15,5 +15,5 @@ public class CreateEventRequest {
 
     String eventLocation;
 
-    List<User> organizers;
+    List<Integer> organizersId;
 }
