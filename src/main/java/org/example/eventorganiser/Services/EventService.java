@@ -6,9 +6,11 @@ import org.example.eventorganiser.Repositories.EventRepository;
 import org.example.eventorganiser.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +24,7 @@ public class EventService {
         this.userRepository = userRepository;
     }
 
-    public void addEvent(String eventName, Date eventDate, String eventLocation, List<Integer> organizersId) throws SQLException {
+    public void addEvent(String eventName, LocalDate eventDate, String eventLocation, List<Integer> organizersId) throws SQLException {
         Event event = new Event();
         event.setEventName(eventName);
         event.setEventDate(eventDate);

@@ -1,5 +1,6 @@
 package org.example.eventorganiser.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,9 +25,11 @@ public class User {
 
     private String password;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EventGuests> events;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "event_organisers",

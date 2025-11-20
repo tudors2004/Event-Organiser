@@ -2,9 +2,12 @@ package org.example.eventorganiser.Controllers;
 
 import org.example.eventorganiser.DTOs.LoginRequest;
 import org.example.eventorganiser.DTOs.RegisterRequest;
+import org.example.eventorganiser.Models.User;
 import org.example.eventorganiser.Services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,9 +33,16 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         boolean success = userService.loginUser(request.getEmail(), request.getPassword());
         if (success) {
-            return ResponseEntity.ok("Login successful");
+            User user = userService.getUserByEmail(request.getEmail());
+            return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.status(401).body("Invalid email or password");
         }
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 }

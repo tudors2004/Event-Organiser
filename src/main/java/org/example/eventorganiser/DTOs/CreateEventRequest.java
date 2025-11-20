@@ -4,14 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.eventorganiser.Models.User;
 
-import java.sql.Date;
+
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
 public class CreateEventRequest {
     String eventName;
-    Date eventDate;
+    LocalDate eventDate;
 
     String eventLocation;
 

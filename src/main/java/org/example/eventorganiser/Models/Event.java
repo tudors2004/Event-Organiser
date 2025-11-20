@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
+
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -18,7 +20,7 @@ public class Event {
 
     private String eventName;
 
-    private Date eventDate;
+    private LocalDate eventDate;
 
     private String eventLocation;
 
@@ -30,7 +32,7 @@ public class Event {
 
     public Event() {}
 
-    public Event(String eventName, Date eventDate, String eventLocation) {
+    public Event(String eventName, LocalDate eventDate, String eventLocation) {
         this.eventName = eventName;
         this.eventDate = eventDate;
         this.eventLocation = eventLocation;
