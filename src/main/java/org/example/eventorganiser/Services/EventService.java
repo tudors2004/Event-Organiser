@@ -5,6 +5,7 @@ import org.example.eventorganiser.Repositories.EventRepository;
 import org.example.eventorganiser.Repositories.EventGuestsRepository;
 import org.example.eventorganiser.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,8 +29,8 @@ public class EventService {
         event.setEventDate(eventDate);
         event.setEventLocation(eventLocation);
         List<User> organizers = new ArrayList<>();
-        for(Integer organizerId : organizersId){
-            if(userRepository.findById(organizerId).isEmpty()){
+        for (Integer organizerId : organizersId) {
+            if (userRepository.findById(organizerId).isEmpty()) {
                 throw new SQLException("Organizer was not found");
             }
             User organizer = userRepository.findById(organizerId).get();
@@ -43,6 +44,14 @@ public class EventService {
         eventRepository.save(event);
         userRepository.saveAll(organizers);
     }
+
+    public List<Event> getAllEventsForUser(Integer userId) throws SQLException {
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new SQLException("User not found");
+        }
+        return eventRepository.findAllEventsByUserId(userId);
+    }
+
     public Event getEventById(Long id) throws SQLException {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new SQLException("Event not found"));
@@ -69,12 +78,15 @@ public class EventService {
         }
         eventRepository.deleteById(id);
     }
+
     public List<EventGuests> getInvitationsForUser(User user) {
         return eventGuestsRepository.findByUser(user);
     }
+
     public List<EventGuests> getPendingInvitationsForUser(User user) {
         return eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.PENDING);
     }
+
     public List<EventGuests> getAcceptedInvitationsForUser(User user) {
         return eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.ACCEPTED);
     }
@@ -95,5 +107,4 @@ public class EventService {
         invitation.setStatus(status);
         eventGuestsRepository.save(invitation);
     }
-
 }
