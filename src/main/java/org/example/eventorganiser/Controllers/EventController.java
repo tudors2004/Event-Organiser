@@ -7,8 +7,8 @@ import org.example.eventorganiser.Models.InvitationStatus;
 import org.example.eventorganiser.Models.User;
 import org.example.eventorganiser.Services.EventService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -32,6 +32,17 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getAllEventsForUser(@PathVariable Integer userId){
+        try{
+            List<Event> events = eventService.getAllEventsForUser(userId);
+            return ResponseEntity.ok(events);
+        } catch (SQLException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable Long id){
         try{
@@ -41,6 +52,7 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping
     public ResponseEntity<?> getAllEvents(){
         try{
@@ -50,6 +62,7 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody CreateEventRequest request){
         try{
@@ -69,6 +82,7 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @PostMapping("/{eventId}/respond")
     public ResponseEntity<?> respondToInvitation(
             @PathVariable int eventId,
@@ -91,6 +105,7 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/invitations/pending")
     public ResponseEntity<?> getMyPendingInvitations(@AuthenticationPrincipal User user) {
         try {
@@ -100,6 +115,7 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/invitations/accepted")
     public ResponseEntity<?> getMyAcceptedInvitations(@AuthenticationPrincipal User user) {
         try {
@@ -109,6 +125,7 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/invitations/declined")
     public ResponseEntity<?> getMyDeclinedInvitations(@AuthenticationPrincipal User user) {
         try {
@@ -118,5 +135,4 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 }
