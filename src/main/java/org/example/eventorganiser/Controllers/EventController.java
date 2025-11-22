@@ -2,8 +2,12 @@ package org.example.eventorganiser.Controllers;
 
 import org.example.eventorganiser.DTOs.CreateEventRequest;
 import org.example.eventorganiser.Models.Event;
+import org.example.eventorganiser.Models.EventGuests;
+import org.example.eventorganiser.Models.InvitationStatus;
+import org.example.eventorganiser.Models.User;
 import org.example.eventorganiser.Services.EventService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -65,4 +69,54 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @PostMapping("/{eventId}/respond")
+    public ResponseEntity<?> respondToInvitation(
+            @PathVariable int eventId,
+            @RequestParam InvitationStatus status,
+            @AuthenticationPrincipal User user) {
+        try {
+            eventService.respondToInvitation(eventId, user, status);
+            return ResponseEntity.ok("Invitation response recorded successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/invitations")
+    public ResponseEntity<?> getMyInvitations(@AuthenticationPrincipal User user) {
+        try {
+            List<EventGuests> invitations = eventService.getInvitationsForUser(user);
+            return ResponseEntity.ok(invitations);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/invitations/pending")
+    public ResponseEntity<?> getMyPendingInvitations(@AuthenticationPrincipal User user) {
+        try {
+            List<EventGuests> invitations = eventService.getPendingInvitationsForUser(user);
+            return ResponseEntity.ok(invitations);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/invitations/accepted")
+    public ResponseEntity<?> getMyAcceptedInvitations(@AuthenticationPrincipal User user) {
+        try {
+            List<EventGuests> invitations = eventService.getAcceptedInvitationsForUser(user);
+            return ResponseEntity.ok(invitations);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/invitations/declined")
+    public ResponseEntity<?> getMyDeclinedInvitations(@AuthenticationPrincipal User user) {
+        try {
+            List<EventGuests> invitations = eventService.getDeclinedInvitationsForUser(user);
+            return ResponseEntity.ok(invitations);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

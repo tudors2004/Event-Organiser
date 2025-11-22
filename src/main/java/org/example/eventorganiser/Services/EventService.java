@@ -1,8 +1,8 @@
 package org.example.eventorganiser.Services;
 
-import org.example.eventorganiser.Models.Event;
-import org.example.eventorganiser.Models.User;
+import org.example.eventorganiser.Models.*;
 import org.example.eventorganiser.Repositories.EventRepository;
+import org.example.eventorganiser.Repositories.EventGuestsRepository;
 import org.example.eventorganiser.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import java.sql.SQLException;
@@ -14,8 +14,10 @@ import java.util.List;
 public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final EventGuestsRepository eventGuestsRepository;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository, EventGuestsRepository eventGuestsRepository) {
+        this.eventGuestsRepository = eventGuestsRepository;
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
     }
@@ -67,4 +69,31 @@ public class EventService {
         }
         eventRepository.deleteById(id);
     }
+    public List<EventGuests> getInvitationsForUser(User user) {
+        return eventGuestsRepository.findByUser(user);
+    }
+    public List<EventGuests> getPendingInvitationsForUser(User user) {
+        return eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.PENDING);
+    }
+    public List<EventGuests> getAcceptedInvitationsForUser(User user) {
+        return eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.ACCEPTED);
+    }
+    public List<EventGuests> getDeclinedInvitationsForUser(User user) {
+        return eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.DECLINED);
+    }
+
+    public void respondToInvitation(int eventId, User user, InvitationStatus status) {
+        EventGuestsId id = new EventGuestsId(user.getUserId(), eventId);
+
+        EventGuests invitation = eventGuestsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invitation not found"));
+
+        if (!invitation.getUser().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("Not authorized");
+        }
+
+        invitation.setStatus(status);
+        eventGuestsRepository.save(invitation);
+    }
+
 }
