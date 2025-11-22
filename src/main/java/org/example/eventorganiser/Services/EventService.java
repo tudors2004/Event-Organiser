@@ -5,14 +5,10 @@ import org.example.eventorganiser.Models.User;
 import org.example.eventorganiser.Repositories.EventRepository;
 import org.example.eventorganiser.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
-
-
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EventService {
@@ -44,5 +40,31 @@ public class EventService {
 
         eventRepository.save(event);
         userRepository.saveAll(organizers);
+    }
+    public Event getEventById(Long id) throws SQLException {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new SQLException("Event not found"));
+    }
+
+    public List<Event> getAllEvents() throws SQLException {
+        return eventRepository.findAll();
+    }
+
+    public void updateEvent(Long id, String eventName, LocalDate eventDate, String eventLocation) throws SQLException {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new SQLException("Event not found"));
+
+        event.setEventName(eventName);
+        event.setEventDate(eventDate);
+        event.setEventLocation(eventLocation);
+
+        eventRepository.save(event);
+    }
+
+    public void deleteEvent(Long id) throws SQLException {
+        if(!eventRepository.existsById(id)){
+            throw new SQLException("Event not found");
+        }
+        eventRepository.deleteById(id);
     }
 }
