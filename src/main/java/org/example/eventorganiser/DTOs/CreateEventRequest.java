@@ -2,20 +2,24 @@ package org.example.eventorganiser.DTOs;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.eventorganiser.Models.User;
-
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Future;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
 public class CreateEventRequest {
+    @NotBlank(message = "Event name is required")
     String eventName;
+
+    @Future(message = "Event date must be in the future")
     LocalDate eventDate;
 
+    @NotBlank(message = "Event location is required")
     String eventLocation;
 
+    @NotEmpty(message = "At least one organizer is required")
     List<Integer> organizersId;
 }

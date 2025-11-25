@@ -2,7 +2,7 @@ package org.example.eventorganiser.Controllers;
 
 import org.example.eventorganiser.DTOs.CreateEventRequest;
 import org.example.eventorganiser.Models.Event;
-import org.example.eventorganiser.Models.EventGuests;
+import jakarta.validation.Valid;
 import org.example.eventorganiser.Models.InvitationStatus;
 import org.example.eventorganiser.Models.User;
 import org.example.eventorganiser.Services.EventService;
@@ -24,7 +24,7 @@ public class EventController {
     }
 
     @PostMapping("/createEvent")
-    public ResponseEntity<?> createEvent(@RequestBody CreateEventRequest request){
+    public ResponseEntity<?> createEvent(@Valid @RequestBody CreateEventRequest request){
         try{
             eventService.addEvent(request.getEventName(), request.getEventDate(), request.getEventLocation(), request.getOrganizersId());
             return ResponseEntity.ok("Event created successfully");
@@ -44,7 +44,7 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEventById(@PathVariable Long id){
+    public ResponseEntity<?> getEventById(@PathVariable int id){
         try{
             Event event = eventService.getEventById(id);
             return ResponseEntity.ok(event);
@@ -64,7 +64,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody CreateEventRequest request){
+    public ResponseEntity<?> updateEvent(@PathVariable int id, @RequestBody CreateEventRequest request){
         try{
             eventService.updateEvent(id, request.getEventName(), request.getEventDate(), request.getEventLocation());
             return ResponseEntity.ok("Event updated successfully");
@@ -74,7 +74,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEvent(@PathVariable Long id){
+    public ResponseEntity<?> deleteEvent(@PathVariable int id){
         try{
             eventService.deleteEvent(id);
             return ResponseEntity.ok("Event deleted successfully");
@@ -95,44 +95,64 @@ public class EventController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    @GetMapping("/invitations")
-    public ResponseEntity<?> getMyInvitations(@AuthenticationPrincipal User user) {
+    @GetMapping("/guest/pending")
+    public ResponseEntity<?> getPendingInvitations(@AuthenticationPrincipal User user) {
         try {
-            List<EventGuests> invitations = eventService.getInvitationsForUser(user);
-            return ResponseEntity.ok(invitations);
-        } catch (Exception e) {
+            List<Event> events = eventService.getPendingInvitations(user.getEmail());
+            return ResponseEntity.ok(events);
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/invitations/pending")
-    public ResponseEntity<?> getMyPendingInvitations(@AuthenticationPrincipal User user) {
+    @PostMapping("/{eventId}/invitation/accept")
+    public ResponseEntity<?> acceptInvitation(@PathVariable int eventId, @AuthenticationPrincipal User user) {
         try {
-            List<EventGuests> invitations = eventService.getPendingInvitationsForUser(user);
-            return ResponseEntity.ok(invitations);
-        } catch (Exception e) {
+            eventService.respondToInvitation(eventId, user, InvitationStatus.ACCEPTED);
+            return ResponseEntity.ok("Invitation accepted successfully");
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/invitations/accepted")
-    public ResponseEntity<?> getMyAcceptedInvitations(@AuthenticationPrincipal User user) {
+    @PostMapping("/{eventId}/invitation/decline")
+    public ResponseEntity<?> declineInvitation(@PathVariable int eventId, @AuthenticationPrincipal User user) {
         try {
-            List<EventGuests> invitations = eventService.getAcceptedInvitationsForUser(user);
-            return ResponseEntity.ok(invitations);
-        } catch (Exception e) {
+            eventService.respondToInvitation(eventId, user, InvitationStatus.DECLINED);
+            return ResponseEntity.ok("Invitation declined successfully");
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/invitations/declined")
-    public ResponseEntity<?> getMyDeclinedInvitations(@AuthenticationPrincipal User user) {
+    @GetMapping("/organizer")
+    public ResponseEntity<?> getOrganizerEvents(@AuthenticationPrincipal User user) {
         try {
-            List<EventGuests> invitations = eventService.getDeclinedInvitationsForUser(user);
-            return ResponseEntity.ok(invitations);
-        } catch (Exception e) {
+            List<Event> events = eventService.getOrganizerEvents(user.getEmail());
+            return ResponseEntity.ok(events);
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/guest/accepted")
+    public ResponseEntity<?> getAcceptedEvents(@AuthenticationPrincipal User user) {
+        try {
+            List<Event> events = eventService.getAcceptedEvents(user.getEmail());
+            return ResponseEntity.ok(events);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/guest/declined")
+    public ResponseEntity<?> getDeclinedEvents(@AuthenticationPrincipal User user) {
+        try {
+            List<Event> events = eventService.getDeclinedEvents(user.getEmail());
+            return ResponseEntity.ok(events);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

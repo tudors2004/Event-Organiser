@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -52,7 +53,7 @@ public class EventService {
         return eventRepository.findAllEventsByUserId(userId);
     }
 
-    public Event getEventById(Long id) throws SQLException {
+    public Event getEventById(int id) throws SQLException {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new SQLException("Event not found"));
     }
@@ -61,7 +62,7 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public void updateEvent(Long id, String eventName, LocalDate eventDate, String eventLocation) throws SQLException {
+    public void updateEvent(int id, String eventName, LocalDate eventDate, String eventLocation) throws SQLException {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new SQLException("Event not found"));
 
@@ -72,26 +73,11 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    public void deleteEvent(Long id) throws SQLException {
+    public void deleteEvent(int id) throws SQLException {
         if(!eventRepository.existsById(id)){
             throw new SQLException("Event not found");
         }
         eventRepository.deleteById(id);
-    }
-
-    public List<EventGuests> getInvitationsForUser(User user) {
-        return eventGuestsRepository.findByUser(user);
-    }
-
-    public List<EventGuests> getPendingInvitationsForUser(User user) {
-        return eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.PENDING);
-    }
-
-    public List<EventGuests> getAcceptedInvitationsForUser(User user) {
-        return eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.ACCEPTED);
-    }
-    public List<EventGuests> getDeclinedInvitationsForUser(User user) {
-        return eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.DECLINED);
     }
 
     public void respondToInvitation(int eventId, User user, InvitationStatus status) {
@@ -100,11 +86,44 @@ public class EventService {
         EventGuests invitation = eventGuestsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Invitation not found"));
 
-        if (!invitation.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("Not authorized");
-        }
-
         invitation.setStatus(status);
         eventGuestsRepository.save(invitation);
     }
+
+    public List<Event> getPendingInvitations(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        List<EventGuests> pendingGuests = eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.PENDING);
+        return pendingGuests.stream().map(EventGuests::getEvent).collect(Collectors.toList());
+    }
+
+    public List<Event> getOrganizerEvents(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return eventRepository.findEventsByOrganizer(user.getUserId());
+    }
+
+    public List<Event> getAcceptedEvents(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        List<EventGuests> acceptedGuests = eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.ACCEPTED);
+        return acceptedGuests.stream().map(EventGuests::getEvent).collect(Collectors.toList());
+    }
+
+    public List<Event> getDeclinedEvents(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        List<EventGuests> declinedGuests = eventGuestsRepository.findByUserAndStatus(user, InvitationStatus.DECLINED);
+        return declinedGuests.stream().map(EventGuests::getEvent).collect(Collectors.toList());
+    }
+
+
 }
