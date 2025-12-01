@@ -1,5 +1,6 @@
 package org.example.eventorganiser.Controllers;
 
+import jakarta.mail.MessagingException;
 import org.example.eventorganiser.DTOs.EmailRequest;
 import org.example.eventorganiser.Services.EmailService;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,12 @@ public class EmailController {
 
     @PostMapping("/send")
     public ResponseEntity<String> send(@RequestBody EmailRequest request) {
-        emailService.sendEmail(request.getRecipients(), request.getSubject(), request.getMessage());
-        return ResponseEntity.ok("Emails sent successfully!");
+        try {
+            emailService.sendEmail(request.getRecipients(), request.getName(), request.getEventName());
+            return ResponseEntity.ok("Emails sent successfully!");
+        }
+        catch (MessagingException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

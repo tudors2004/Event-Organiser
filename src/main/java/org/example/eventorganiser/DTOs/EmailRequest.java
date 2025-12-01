@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 public class EmailRequest {
     private List<String> recipients;
-    private String subject;
-    private String message;
+    private String name;
+    private String eventName;
 }
 
