@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -23,6 +21,12 @@ public class Event {
     private LocalDate eventDate;
 
     private String eventLocation;
+
+    @Column(length = 2000)
+    private String description;
+
+    @Column(length = 5000)
+    private String schedule;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventGuests> eventGuests;

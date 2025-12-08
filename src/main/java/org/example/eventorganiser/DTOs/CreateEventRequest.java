@@ -20,6 +20,10 @@ public class CreateEventRequest {
     @NotBlank(message = "Event location is required")
     String eventLocation;
 
+    String description;
+
+    String schedule;
+
     @NotEmpty(message = "At least one organizer is required")
     List<Integer> organizersId;
 }
