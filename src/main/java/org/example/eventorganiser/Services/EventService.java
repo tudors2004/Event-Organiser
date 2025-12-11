@@ -53,6 +53,13 @@ public class EventService {
         return eventRepository.findAllEventsByUserId(userId);
     }
 
+    public List<Event> getAllEventsCreatedByUser(Integer userId) throws SQLException {
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new SQLException("User not found");
+        }
+        return eventRepository.findEventsByOrganizer(userId);
+    }
+
     public Event getEventById(int id) throws SQLException {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new SQLException("Event not found"));
@@ -80,8 +87,8 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-    public void respondToInvitation(int eventId, User user, InvitationStatus status) {
-        EventGuestsId id = new EventGuestsId(user.getUserId(), eventId);
+    public void respondToInvitation(int eventId, int userId, InvitationStatus status) {
+        EventGuestsId id = new EventGuestsId(userId, eventId);
 
         EventGuests invitation = eventGuestsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Invitation not found"));
@@ -125,5 +132,17 @@ public class EventService {
         return declinedGuests.stream().map(EventGuests::getEvent).collect(Collectors.toList());
     }
 
+    public EventGuests createEventGuests(String email, String eventName) {
+        System.out.println("User email: " + email);
+        User user = userRepository.findByEmail(email);
+        Event event = eventRepository.findByEventName(eventName);
+
+        System.out.println("User Id: " + user.getUserId());
+        System.out.println("Event Id: " + event.getEventId());
+
+        EventGuests eventGuests = new EventGuests(user, event);
+
+        return eventGuestsRepository.save(eventGuests);
+    }
 
 }

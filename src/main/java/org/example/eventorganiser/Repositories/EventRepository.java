@@ -16,4 +16,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     @Query("SELECT DISTINCT e FROM Event e JOIN e.organizers o WHERE o.userId = :userId")
     List<Event> findEventsByOrganizer(@Param("userId") Integer userId);
+
+    Event findByEventName(String eventName);
 }

@@ -6,11 +6,11 @@ import jakarta.persistence.*;
 public class EventGuests {
 
     @EmbeddedId
-    private EventGuestsId id = new EventGuestsId();
+    private EventGuestsId id;
 
     @ManyToOne
     @MapsId("guestId")
-    @JoinColumn(name="guest_user_id")
+    @JoinColumn(name="guest_id")
     private User user;
 
     @ManyToOne
@@ -24,10 +24,17 @@ public class EventGuests {
 
     public EventGuests() {}
 
+    public EventGuests(User user, Event event) {
+        this.user = user;
+        this.event = event;
+        this.id = new EventGuestsId(this.user.getUserId(), this.event.getEventId());
+    }
+
     public EventGuests(User user, Event event, InvitationStatus status){
         this.user = user;
         this.event = event;
         this.status = status;
+        this.id = new EventGuestsId(this.user.getUserId(), this.event.getEventId());
     }
 
     public EventGuestsId getId() {

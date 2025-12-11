@@ -1,6 +1,7 @@
 package org.example.eventorganiser.Controllers;
 
 import org.example.eventorganiser.DTOs.CreateEventRequest;
+import org.example.eventorganiser.Mapper.EventMapper;
 import org.example.eventorganiser.Models.Event;
 import jakarta.validation.Valid;
 import org.example.eventorganiser.Models.InvitationStatus;
@@ -37,7 +38,17 @@ public class EventController {
     public ResponseEntity<?> getAllEventsForUser(@PathVariable Integer userId){
         try{
             List<Event> events = eventService.getAllEventsForUser(userId);
-            return ResponseEntity.ok(events);
+            return ResponseEntity.ok(events.stream().map(EventMapper::toDto).toList());
+        } catch (SQLException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/created/user/{userId}")
+    public ResponseEntity<?> getAllEventsCreatedByUser(@PathVariable Integer userId){
+        try{
+            List<Event> events = eventService.getAllEventsCreatedByUser(userId);
+            return ResponseEntity.ok(events.stream().map(EventMapper::toDto).toList());
         } catch (SQLException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -57,7 +68,7 @@ public class EventController {
     public ResponseEntity<?> getAllEvents(){
         try{
             List<Event> events = eventService.getAllEvents();
-            return ResponseEntity.ok(events);
+            return ResponseEntity.ok(events.stream().map(EventMapper::toDto).toList());
         } catch (SQLException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -87,9 +98,9 @@ public class EventController {
     public ResponseEntity<?> respondToInvitation(
             @PathVariable int eventId,
             @RequestParam InvitationStatus status,
-            @AuthenticationPrincipal User user) {
+            @RequestParam int userId) {
         try {
-            eventService.respondToInvitation(eventId, user, status);
+            eventService.respondToInvitation(eventId, userId, status);
             return ResponseEntity.ok("Invitation response recorded successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -106,9 +117,9 @@ public class EventController {
     }
 
     @PostMapping("/{eventId}/invitation/accept")
-    public ResponseEntity<?> acceptInvitation(@PathVariable int eventId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> acceptInvitation(@PathVariable int eventId,@RequestParam int userId) {
         try {
-            eventService.respondToInvitation(eventId, user, InvitationStatus.ACCEPTED);
+            eventService.respondToInvitation(eventId, userId, InvitationStatus.ACCEPTED);
             return ResponseEntity.ok("Invitation accepted successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -116,9 +127,9 @@ public class EventController {
     }
 
     @PostMapping("/{eventId}/invitation/decline")
-    public ResponseEntity<?> declineInvitation(@PathVariable int eventId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> declineInvitation(@PathVariable int eventId, @RequestParam int userId) {
         try {
-            eventService.respondToInvitation(eventId, user, InvitationStatus.DECLINED);
+            eventService.respondToInvitation(eventId, userId, InvitationStatus.DECLINED);
             return ResponseEntity.ok("Invitation declined successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
