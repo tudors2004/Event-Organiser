@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.sql.SQLException;
 import java.util.List;
+import org.example.eventorganiser.Models.EventGuests;
+import org.example.eventorganiser.Mapper.EventGuestsMapper;
 
 @RestController
 @RequestMapping("/events")
@@ -175,6 +177,46 @@ public class EventController {
         try {
             List<Event> events = eventService.getDeclinedEvents(user.getEmail());
             return ResponseEntity.ok(events);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{eventId}/guests")
+    public ResponseEntity<?> getEventGuests(@PathVariable int eventId) {
+        try {
+            List<EventGuests> guests = eventService.getEventGuests(eventId);
+            return ResponseEntity.ok(guests.stream().map(EventGuestsMapper::toDto).toList());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{eventId}/guests")
+    public ResponseEntity<?> addGuestToEvent(@PathVariable int eventId, @RequestParam String email) {
+        try {
+            eventService.addGuestToEvent(eventId, email);
+            return ResponseEntity.ok("Guest added successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{eventId}/guests/{userId}")
+    public ResponseEntity<?> removeGuestFromEvent(@PathVariable int eventId, @PathVariable int userId) {
+        try {
+            eventService.removeGuestFromEvent(eventId, userId);
+            return ResponseEntity.ok("Guest removed successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{eventId}/guests/{userId}")
+    public ResponseEntity<?> updateGuestStatus(@PathVariable int eventId, @PathVariable int userId, @RequestParam InvitationStatus status) {
+        try {
+            eventService.updateGuestStatus(eventId, userId, status);
+            return ResponseEntity.ok("Guest status updated successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

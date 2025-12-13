@@ -1,5 +1,6 @@
 package org.example.eventorganiser.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,7 @@ public class Event {
     @Column(length = 5000)
     private String schedule;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventGuests> eventGuests;
 

@@ -152,4 +152,43 @@ public class EventService {
         return eventGuestsRepository.save(eventGuests);
     }
 
+    public List<EventGuests> getEventGuests(int eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+        return eventGuestsRepository.findByEvent(event);
+    }
+
+    public void addGuestToEvent(int eventId, String email) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        EventGuestsId id = new EventGuestsId(user.getUserId(), eventId);
+        if (eventGuestsRepository.existsById(id)) {
+            throw new RuntimeException("User is already a guest");
+        }
+
+        EventGuests eventGuests = new EventGuests(user, event);
+        eventGuestsRepository.save(eventGuests);
+    }
+
+    public void removeGuestFromEvent(int eventId, int userId) {
+        EventGuestsId id = new EventGuestsId(userId, eventId);
+        if (!eventGuestsRepository.existsById(id)) {
+            throw new RuntimeException("Guest not found in this event");
+        }
+        eventGuestsRepository.deleteById(id);
+    }
+
+    public void updateGuestStatus(int eventId, int userId, InvitationStatus status) {
+        EventGuestsId id = new EventGuestsId(userId, eventId);
+        EventGuests guest = eventGuestsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Guest not found"));
+        guest.setStatus(status);
+        eventGuestsRepository.save(guest);
+    }
+
 }
