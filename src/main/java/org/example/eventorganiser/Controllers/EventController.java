@@ -27,7 +27,14 @@ public class EventController {
     @PostMapping("/createEvent")
     public ResponseEntity<?> createEvent(@Valid @RequestBody CreateEventRequest request){
         try{
-            eventService.addEvent(request.getEventName(), request.getEventDate(), request.getEventLocation(), request.getOrganizersId());
+            eventService.addEvent(
+                request.getEventName(),
+                request.getEventDate(),
+                request.getEventLocation(),
+                request.getDescription(),
+                request.getSchedule(),
+                request.getOrganizersId()
+            );
             return ResponseEntity.ok("Event created successfully");
         } catch (SQLException e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -77,7 +84,14 @@ public class EventController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable int id, @RequestBody CreateEventRequest request){
         try{
-            eventService.updateEvent(id, request.getEventName(), request.getEventDate(), request.getEventLocation());
+            eventService.updateEvent(
+                id,
+                request.getEventName(),
+                request.getEventDate(),
+                request.getEventLocation(),
+                request.getDescription(),
+                request.getSchedule()
+            );
             return ResponseEntity.ok("Event updated successfully");
         } catch (SQLException e){
             return ResponseEntity.badRequest().body(e.getMessage());

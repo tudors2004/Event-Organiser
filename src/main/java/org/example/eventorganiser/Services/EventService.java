@@ -24,11 +24,15 @@ public class EventService {
         this.userRepository = userRepository;
     }
 
-    public void addEvent(String eventName, LocalDate eventDate, String eventLocation, List<Integer> organizersId) throws SQLException {
+    public void addEvent(String eventName, LocalDate eventDate, String eventLocation,
+                        String description, String schedule, List<Integer> organizersId) throws SQLException {
         Event event = new Event();
         event.setEventName(eventName);
         event.setEventDate(eventDate);
         event.setEventLocation(eventLocation);
+        event.setDescription(description);
+        event.setSchedule(schedule);
+
         List<User> organizers = new ArrayList<>();
         for (Integer organizerId : organizersId) {
             if (userRepository.findById(organizerId).isEmpty()) {
@@ -69,13 +73,16 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public void updateEvent(int id, String eventName, LocalDate eventDate, String eventLocation) throws SQLException {
+    public void updateEvent(int id, String eventName, LocalDate eventDate, String eventLocation,
+                           String description, String schedule) throws SQLException {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new SQLException("Event not found"));
 
         event.setEventName(eventName);
         event.setEventDate(eventDate);
         event.setEventLocation(eventLocation);
+        event.setDescription(description);
+        event.setSchedule(schedule);
 
         eventRepository.save(event);
     }
