@@ -1,5 +1,6 @@
 package org.example.eventorganiser.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +17,7 @@ public class EventGuests {
     @ManyToOne
     @MapsId("eventId")
     @JoinColumn(name="event_id")
+    @JsonIgnore
     private Event event;
 
     @Enumerated(EnumType.STRING)
