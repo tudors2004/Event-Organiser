@@ -10,11 +10,12 @@ import org.example.eventorganiser.Services.EventService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-
 import java.sql.SQLException;
 import java.util.List;
 import org.example.eventorganiser.Models.EventGuests;
 import org.example.eventorganiser.Mapper.EventGuestsMapper;
+import org.example.eventorganiser.DTOs.LocationDTO;
+import org.example.eventorganiser.Models.Location;
 
 @RestController
 @RequestMapping("/events")
@@ -32,7 +33,7 @@ public class EventController {
             eventService.addEvent(
                 request.getEventName(),
                 request.getEventDate(),
-                request.getEventLocation(),
+                request.getLocation(),
                 request.getDescription(),
                 request.getSchedule(),
                 request.getOrganizersId()
@@ -90,7 +91,7 @@ public class EventController {
                 id,
                 request.getEventName(),
                 request.getEventDate(),
-                request.getEventLocation(),
+                request.getLocation(),
                 request.getDescription(),
                 request.getSchedule()
             );
@@ -220,6 +221,21 @@ public class EventController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PutMapping("/{id}/location")
+    public ResponseEntity<Event> updateEventLocation(
+            @PathVariable Long id,
+            @RequestBody LocationDTO locationDTO) {
+
+        Location location = new Location(
+                locationDTO.getLatitude(),
+                locationDTO.getLongitude(),
+                locationDTO.getAddress()
+        );
+
+        Event updated = eventService.updateLocation(id, location);
+        return ResponseEntity.ok(updated);
     }
 
 }

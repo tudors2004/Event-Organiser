@@ -1,5 +1,7 @@
 package org.example.eventorganiser.DTOs;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.validation.constraints.NotBlank;
@@ -17,8 +19,9 @@ public class CreateEventRequest {
     @Future(message = "Event date must be in the future")
     LocalDate eventDate;
 
-    @NotBlank(message = "Event location is required")
-    String eventLocation;
+    @NotNull(message = "Event location is required")
+    @Valid
+    LocationDTO location;
 
     String description;
 

@@ -1,5 +1,6 @@
 package org.example.eventorganiser.Services;
 
+import org.example.eventorganiser.DTOs.LocationDTO;
 import org.example.eventorganiser.Models.*;
 import org.example.eventorganiser.Repositories.EventRepository;
 import org.example.eventorganiser.Repositories.EventGuestsRepository;
@@ -24,12 +25,17 @@ public class EventService {
         this.userRepository = userRepository;
     }
 
-    public void addEvent(String eventName, LocalDate eventDate, String eventLocation,
+    public void addEvent(String eventName, LocalDate eventDate, LocationDTO locationDTO,
                         String description, String schedule, List<Integer> organizersId) throws SQLException {
+        Location location = new Location(
+                locationDTO.getLatitude(),
+                locationDTO.getLongitude(),
+                locationDTO.getAddress()
+        );
         Event event = new Event();
         event.setEventName(eventName);
         event.setEventDate(eventDate);
-        event.setEventLocation(eventLocation);
+        event.setLocation(location);
         event.setDescription(description);
         event.setSchedule(schedule);
 
@@ -73,14 +79,19 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public void updateEvent(int id, String eventName, LocalDate eventDate, String eventLocation,
+    public void updateEvent(int id, String eventName, LocalDate eventDate, LocationDTO locationDTO,
                            String description, String schedule) throws SQLException {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new SQLException("Event not found"));
 
+        Location location = new Location(
+                locationDTO.getLatitude(),
+                locationDTO.getLongitude(),
+                locationDTO.getAddress()
+        );
         event.setEventName(eventName);
         event.setEventDate(eventDate);
-        event.setEventLocation(eventLocation);
+        event.setLocation(location);
         event.setDescription(description);
         event.setSchedule(schedule);
 
@@ -190,5 +201,12 @@ public class EventService {
         guest.setStatus(status);
         eventGuestsRepository.save(guest);
     }
+    public Event updateLocation(Long id, Location location) {
+        Event event = eventRepository.findById(id.intValue())
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+        event.setLocation(location);
+        return eventRepository.save(event);
+    }
+
 
 }

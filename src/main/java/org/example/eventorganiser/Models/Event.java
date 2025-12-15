@@ -21,7 +21,8 @@ public class Event {
 
     private LocalDate eventDate;
 
-    private String eventLocation;
+    @Embedded
+    private Location location;
 
     @Column(length = 2000)
     private String description;
@@ -38,9 +39,9 @@ public class Event {
 
     public Event() {}
 
-    public Event(String eventName, LocalDate eventDate, String eventLocation) {
+    public Event(String eventName, LocalDate eventDate, Location location) {
         this.eventName = eventName;
         this.eventDate = eventDate;
-        this.eventLocation = eventLocation;
+        this.location = location;
     }
 }
