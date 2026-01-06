@@ -20,17 +20,26 @@ public class UserService {
     }
 
     public User registerUser(String name, String email, String rawPassword) {
-        if (userRepository.findByEmail(email) != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
+        User found = userRepository.findByEmail(email);
+
+        if (found.getEmail() != null && found.getPassword()!= null) {
+            throw new RuntimeException("Email already in use");
         }
+        if(found.getEmail()!=null) {
+            found.setName(name);
+            found.setPassword(passwordEncoder.encode(rawPassword));
 
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPassword(encodedPassword);
+            return userRepository.save(found);
+        }
+        else {
+            String encodedPassword = passwordEncoder.encode(rawPassword);
+            User user = new User();
+            user.setName(name);
+            user.setEmail(email);
+            user.setPassword(encodedPassword);
 
-        return userRepository.save(user);
+            return userRepository.save(user);
+        }
     }
 
     public boolean loginUser(String email, String rawPassword) {

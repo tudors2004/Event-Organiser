@@ -174,7 +174,9 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Event not found"));
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new RuntimeException("User not found");
+            user = new User();
+            user.setEmail(email);
+            userRepository.save(user);
         }
 
         EventGuestsId id = new EventGuestsId(user.getUserId(), eventId);
