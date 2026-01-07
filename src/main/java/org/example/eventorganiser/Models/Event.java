@@ -37,6 +37,10 @@ public class Event {
     @ManyToMany(mappedBy = "organisedEvents")
     private List<User> organizers;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<Photo> photos;
+
     public Event() {}
 
     public Event(String eventName, LocalDate eventDate, Location location) {
