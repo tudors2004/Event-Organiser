@@ -22,10 +22,10 @@ public class UserService {
     public User registerUser(String name, String email, String rawPassword) {
         User found = userRepository.findByEmail(email);
 
-        if (found.getEmail() != null && found.getPassword()!= null) {
-            throw new RuntimeException("Email already in use");
-        }
-        if(found.getEmail()!=null) {
+        if(found != null) {
+            if (found.getEmail() != null && found.getPassword() != null) {
+                throw new RuntimeException("Email already in use");
+            }
             found.setName(name);
             found.setPassword(passwordEncoder.encode(rawPassword));
 
